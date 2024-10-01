@@ -1,0 +1,8 @@
+examples
+
+.idea
+
+*.o
+*.out
+*.a
+cmake-build-debug
