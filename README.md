@@ -1,2 +1,8 @@
 # Formal Languages
-./build_script.sh && ./test_script.sh
+
+Чтобы собрать проект: ./build_script.sh
+
+Чтобы протестировать: ./test_script.sh
+
+![coverage_screenshot.png](tests/coverage_screenshot.png)
+
