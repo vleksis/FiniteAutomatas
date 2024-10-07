@@ -57,23 +57,44 @@ DFA::DFA(const NFA& automata) : alphabet(automata.alphabet), initial(0) {
 }
 
 std::ostream& operator<<(std::ostream& out, const DFA& automata) {
-  out << "alhabet: " << automata.alphabet << "\n";
-  out << "states: " << automata.size() << "\n";
-  out << "initial: " << automata.initial << "\n";
-  out << "terminated: ";
+  out << "``` mermaid\n\n";
+  out << "graph\n\n";
+
+  out << "classDef terminated_node fill:#bbb,stroke:#333,stroke-width:4px;\n";
+  out << "classDef normal_node fill:#b46,stroke:#333,stroke-width:4px;\n\n";
+
+  out << "Start(( ))\n";
+  for (size_t i = 0; i < automata.size(); ++i) {
+    out << "V" << i << "((" << i << "))\n";
+  }
+  out << "\n";
+
+  out << "class ";
   for (size_t i = 0; i < automata.size(); ++i) {
     if (automata.terminated[i]) {
-      out << i << " ";
+      out << "V" << i << ',';
     }
   }
-  out << "\ntransitions:\n";
+  out << " terminated_node;\n";
+
+  out << "class ";
+  for (size_t i = 0; i < automata.size(); ++i) {
+    if (!automata.terminated[i]) {
+      out << "V" << i << ',';
+    }
+  }
+  out << " normal_node;\n\n";
+
+  out << "Start --> V" << automata.initial << '\n';
   for (size_t u = 0; u < automata.size(); ++u) {
     for (size_t letter = 0; letter < automata.alphabet; ++letter) {
       auto symb = static_cast<char>('a' + letter);
       size_t v = automata.transition[u][letter];
-      out << "{ " << u << ", " << symb << ", " << v << " }\n";
+      out << "V" << u << " -- " << symb << " ---> V" << v << '\n';
     }
   }
+
+  out << "\n```";
 
   return out;
 }
@@ -103,6 +124,53 @@ NFA Reverse(const DFA& automata) {
   return res;
 }
 
-DFA MFDFA(const NFA& automata) {
-  return DFA(Reverse(DFA(Reverse(automata))));
+DFA MFDFA(const NFA& automata) { return DFA(Reverse(DFA(Reverse(automata)))); }
+
+// in assumption that all nodes are reachable
+bool Isomorphic(const DFA& lhs, const DFA& rhs) {
+  if (lhs.alphabet != rhs.alphabet) {
+    return false;
+  }
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+
+  std::vector<size_t> bijection(lhs.size(), lhs.size());
+  std::queue<size_t> queue;
+  bijection[lhs.initial] = rhs.initial;
+  queue.emplace(lhs.initial);
+
+  while (!queue.empty()) {
+    auto u1 = queue.front();
+    auto u2 = bijection[u1];
+    queue.pop();
+
+    for (size_t letter = 0; letter < lhs.alphabet; ++letter) {
+      auto v1 = lhs.transition[u1][letter];
+      auto v2 = rhs.transition[u2][letter];
+      if (bijection[v1] == lhs.size()) {
+        bijection[v1] = v2;
+        queue.emplace(v1);
+      }
+      if (bijection[v1] != v2) {
+        return false;
+      }
+    }
+  }
+
+  for (size_t u1 = 0; u1 < lhs.size(); ++u1) {
+    auto u2 = bijection[u1];
+    if (lhs.terminated[u1] != rhs.terminated[u2]) {
+      return false;
+    }
+  }
+
+  return true;
 }
+
+DFA::DFA(size_t alphabet, size_t size)
+    : alphabet(alphabet),
+      transition(size, std::vector<size_t>(alphabet)),
+      terminated(size) {}
+
+DFA::DFA() = default;

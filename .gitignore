@@ -1,8 +1,8 @@
+bin
 examples
-
 .idea
+cmake-build-debug
 
 *.o
 *.out
 *.a
-cmake-build-debug
