@@ -150,7 +150,8 @@ TEST(DFATestCase, aboba) {
   g.AddTransition(1, 1, 1);
   g.EpsilonClosure();
   DFA dg = MFDFA(g);
-  std::cout << dg;
+  std::cout << g << '\n';
+  std::cout << dg << '\n';
 
   EXPECT_TRUE(Isomorphic(correct, dg));
 }

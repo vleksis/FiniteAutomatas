@@ -37,7 +37,9 @@ class NFA {
 
   friend NFA Reverse(const DFA& automata);
 
+  friend NFA ReadNFA(std::istream& in, std::ostream& out);
  private:
+
   // makes transitive closure of epsilon transitions
   NFA& EpsClosureStep1();
 
@@ -50,8 +52,6 @@ class NFA {
   // deleting epsilon transitions
   NFA& EpsClosureStep4();
 
-  friend NFA ReadNFA();
-
   std::vector<size_t> initial;
   // epsilon has index alphabet
   size_t alphabet = 2;
@@ -59,7 +59,7 @@ class NFA {
   std::vector<bool> terminated;
 };
 
-NFA ReadNFA();
+NFA ReadNFA(std::istream& in, std::ostream& out);
 
 NFA Reverse(const NFA& automata);
 

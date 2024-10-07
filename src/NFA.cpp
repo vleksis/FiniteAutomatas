@@ -143,7 +143,8 @@ NFA& NFA::EpsClosureStep4() {
 
   return *this;
 }
-NFA ReadNFA() {
+
+NFA ReadNFA(std::istream& in, std::ostream& out) {
   size_t alphabet;
   size_t state;
   size_t states;
@@ -151,42 +152,42 @@ NFA ReadNFA() {
   size_t transition_cnt;
   size_t terminated_cnt;
 
-  std::cout << "Alphabet: ";
-  std::cout.flush();
-  std::cin >> alphabet;
+  out << "Alphabet: ";
+  out.flush();
+  in >> alphabet;
 
-  std::cout << "States: ";
-  std::cout.flush();
-  std::cin >> states;
+  out << "States: ";
+  out.flush();
+  in >> states;
 
   NFA automata(alphabet, states);
 
-  std::cout << "Initial: ";
-  std::cout.flush();
-  std::cin >> initial;
+  out << "Initial: ";
+  out.flush();
+  in >> initial;
   automata.AddInitial(initial);
 
-  std::cout << "Terminated states count: ";
-  std::cout.flush();
-  std::cin >> terminated_cnt;
+  out << "Terminated states count: ";
+  out.flush();
+  in >> terminated_cnt;
 
-  std::cout << "Terminated states in 0-numeration (ex. 0 3 1 5): ";
+  out << "Terminated states in 0-numeration (ex. 0 3 1 5): ";
   for (size_t i = 0; i < terminated_cnt; ++i) {
-    std::cin >> state;
+    in >> state;
     automata.terminated[state] = true;
   }
 
-  std::cout << "Transition count: ";
-  std::cout.flush();
-  std::cin >> transition_cnt;
+  out << "Transition count: ";
+  out.flush();
+  in >> transition_cnt;
 
   size_t orig;
   std::string letter;
   size_t dest;
-  std::cout << "Transitions in format 'orig letter dest' (ex. 0 eps 3):\n";
-  std::cout.flush();
+  out << "Transitions in format 'orig letter dest' (ex. 0 eps 3):\n";
+  out.flush();
   for (size_t i = 0; i < transition_cnt; ++i) {
-    std::cin >> orig >> letter >> dest;
+    in >> orig >> letter >> dest;
     if (letter == "eps") {
       automata.AddTransition(orig, alphabet, dest);
     } else {
